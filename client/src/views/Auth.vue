@@ -30,8 +30,8 @@ export default {
 setup() {
   const authStore = useAuthStore();
   const alertStore = useAlertStore();
-  const email = ref('s@mail.ru');
-  const password = ref('');
+  const email = ref('smaxims03@mail.ru');
+  const password = ref('123456789');
   let emailErr = ref(null);
   let passwordErr = ref(null);
 
@@ -64,7 +64,7 @@ setup() {
 
   function signUpOrSignIn() {
     if (isValid()) {
-      authStore.signUp(email, password);
+      authStore.signUp({email: email.value, password: password.value});
     }
   }
 

@@ -1,6 +1,7 @@
 import {defineStore} from "pinia";
 import {ref, isRef, isReactive} from "vue";
 import axios from "axios";
+import { $app } from '@/http/axios.js'
 import router from "@/router/index.js";
 import {errorHandling} from "@/utils/errorHandling.js";
 
@@ -45,35 +46,26 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // async function signUp(payload) {
-  //   const url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyA2i6SSMiXRRu7Biuhn6zvK1Vc8tfCiTtk';
-  //   await sendUser(url, payload);
-  // }
 
-  async function signIn(payload) {
-    const url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyA2i6SSMiXRRu7Biuhn6zvK1Vc8tfCiTtk';
-    await sendUser(url, payload)
+  async function signIn({email, password}) {
+    const res = await $app.post('/api/login', {email, password});
+    console.log(res);
+    return res
   }
 
-  async function signUp(email, password) {
-    let URL = null;
-    if (process.env.NODE_ENV === 'development') {
-      URL = 'http://localhost:3000/auth'
-    } else if (process.env.NODE_ENV === 'production') {
-      URL = ''
-    }
-    const response = await axios.post(URL, { email: email.value, password: password.value })
-    console.log(response);
+  async function signUp({ email, password }) {
+    const res = await $app.post('/api/registration', {email, password});
+    console.log(res);
 
-    if (response.success) {
-      // Сохраняем токен
-      localStorage.setItem('token', response.token);
-      console.log('Регистрация успешна!', response.user);
-    } else {
-      console.error('Ошибка:', response.message);
-    }
+    // if (res.success) {
+    //   // Сохраняем токен
+    //   localStorage.setItem('token', res.token);
+    //   console.log('Регистрация успешна!', res.user);
+    // } else {
+    //   console.error('Ошибка:', res.message);
+    // }
 
-    return response;
+    return res;
   }
 
   return {

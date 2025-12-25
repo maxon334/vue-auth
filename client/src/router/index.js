@@ -6,6 +6,7 @@ import Home from "@/views/Home.vue";
 import Help from "@/views/Help.vue";
 import request from "@/views/Request.vue";
 import {useAlertStore} from "@/stores/alertStore.js";
+import NotFound from '@/views/NotFound.vue'
 
 
 
@@ -48,6 +49,11 @@ const router = createRouter({
         layout: 'auth',
         auth: false
       }
+    },
+    {
+      path: '/:notFound(.*)',
+      name: 'NotFound',
+      component: NotFound
     },
     {
       path: '/about',
