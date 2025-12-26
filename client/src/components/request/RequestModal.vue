@@ -37,12 +37,14 @@ import {ref} from 'vue';
 import { useStore } from "@/stores/store.js";
 import {useAlertStore} from "@/stores/alertStore.js";
 import {useRequestsStore} from "@/stores/requests.js";
+import { useAuthStore } from '@/stores/authStore.js'
 
 export default {
 setup() {
   const alertStore = useAlertStore();
   const store = useStore();
   const requestsStore = useRequestsStore();
+  const authStore = useAuthStore();
 
   let name = ref('Соколов М.Е');
   let phone = ref('+7 910 830 12 52');
@@ -54,8 +56,8 @@ setup() {
   }
 
   function createPerson() {
-    const person = { id: Date.now(), name, phone, sum, status };
-    requestsStore.addNewRequest(person);
+    const req = { userID: 11, name, phone, sum, status };
+    requestsStore.addNewRequest(req);
     store.isModalOpen = false;
 
     // Показ уведомления

@@ -1,21 +1,24 @@
 import {defineStore} from "pinia";
-import {ref, isRef, isReactive} from "vue";
+import { ref, isRef, isReactive, reactive } from 'vue'
 import axios from "axios";
 import { $app } from '@/http/axios.js'
 import router from "@/router/index.js";
 import {errorHandling} from "@/utils/errorHandling.js";
+import {useStore} from '@/stores/store.js'
 
 export const useAuthStore = defineStore('auth', () => {
-  let token = null;
+  let token = ref(localStorage.getItem('token'))
   let error = ref(null);
+  let user = reactive(null);
+  let isAuthenticated = ref(false);
 
   function createToken(value) {
-    token = value;
-    localStorage.setItem('token', token)
+    token.value = value;
+    localStorage.setItem('token', value)
   }
 
   function resetToken() {
-    token = null;
+    token.value = null;
     localStorage.removeItem('token');
   }
 
@@ -23,54 +26,61 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
   }
 
-  function logout() {
-    resetToken()
+  function setAuthStatus(value) {
+    isAuthenticated.value = value
   }
 
-  async function sendUser(url, payload) {
+  function setUser(value) {
+    user = value
+  }
+
+  async function login({email, password}) {
+    let res;
     try {
-      const res = await axios.post(url, {
-        email: payload.email.value,
-        password: payload.password.value,
-        returnSecureToken: true
-      });
-      console.log(res);
-      createToken(res.data.idToken);
-      await router.push('/requests');
-    } catch(e) {
-      console.log(e.response.data.error.message)
-      if (e.response.data.error.message === "EMAIL_EXISTS") {
-        return await signIn(payload)
+      useStore().setLoading(true);
+      res = await $app.post('/api/login', {email, password});
+      user = res.data.user;
+      console.log(user)
+      if (res.status === 200) {
+        createToken(res.data.accessToken);
+        setAuthStatus(true);
+        useStore().setLoading(false);
+        await router.push('/requests')
       }
-      error.value = errorHandling(e.response.data.error.message);
-    }
+    } catch (e) { useStore().setLoading(false); console.error(e) }
+
+    return res;
   }
 
-
-  async function signIn({email, password}) {
-    const res = await $app.post('/api/login', {email, password});
-    console.log(res);
+  async function logout() {
+    const res = await $app.post('/api/logout');
+    resetToken();
+    setAuthStatus(false);
     return res
   }
 
-  async function signUp({ email, password }) {
-    const res = await $app.post('/api/registration', {email, password});
-    console.log(res);
-
-    // if (res.success) {
-    //   // Сохраняем токен
-    //   localStorage.setItem('token', res.token);
-    //   console.log('Регистрация успешна!', res.user);
-    // } else {
-    //   console.error('Ошибка:', res.message);
-    // }
+  async function registration({ email, password }) {
+    let res;
+    try {
+      useStore().setLoading(true);
+      res = await $app.post('/api/registration', {email, password});
+      console.log(res);
+      if (res.status === 200) {
+        createToken(res.data.accessToken);
+        setAuthStatus(true);
+        useStore().setLoading(false);
+        await router.push('/requests')
+      }
+    } catch (e) { useStore().setLoading(false); console.error(e) }
 
     return res;
   }
 
   return {
-    logout, signIn, signUp,
+    logout, login, registration,
     createToken, resetToken, token,
-    error, clearError
+    error, clearError,
+    setAuthStatus,
+    setUser
   }
 })

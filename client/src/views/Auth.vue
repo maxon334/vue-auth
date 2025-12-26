@@ -1,7 +1,7 @@
 <template>
   <form class="card"
         style="max-width: 800px; margin: 0 auto"
-        autocomplete="off" @submit.prevent="signUpOrSignIn">
+        autocomplete="off" @submit.prevent>
     <h1>Войти в систему</h1>
     <div class="form-control" :class="[{'error': emailErr}]">
       <label for="email">Email</label>
@@ -13,23 +13,35 @@
       <input v-model="password" type="password" id="password">
       <small v-if="passwordErr">{{ passwordErr }}</small>
     </div>
-    <button class="btn primary" type="submit">Войти</button>
+    <button class="btn primary" type="submit" @click="login" :disabled="store.isLoading">
+      {{!store.isLoading ? 'Войти' : ''}}
+      <app-loader v-if="store.isLoading" />
+    </button>
     <small style="color: red">{{authStore.error}}</small>
+
+    <button class="btn primary" type="submit" @click="registration" :disabled="store.isLoading">
+      {{!store.isLoading ? 'Регистрация' : ''}}
+      <app-loader v-if="store.isLoading" />
+    </button>
   </form>
 </template>
 
 <script>
 import { useAuthStore } from "@/stores/authStore.js";
+import { useStore } from '@/stores/store.js'
 import {ref, watch} from "vue";
 import {useRoute} from "vue-router";
 
 import emailValidator from 'email-validator';
 import {useAlertStore} from "@/stores/alertStore.js";
+import AppLoader from '@/components/ui/AppLoader.vue'
 
 export default {
+  components: { AppLoader },
 setup() {
   const authStore = useAuthStore();
   const alertStore = useAlertStore();
+  const store = useStore();
   const email = ref('smaxims03@mail.ru');
   const password = ref('123456789');
   let emailErr = ref(null);
@@ -62,9 +74,15 @@ setup() {
     }
   }
 
-  function signUpOrSignIn() {
+  function login() {
     if (isValid()) {
-      authStore.signUp({email: email.value, password: password.value});
+      authStore.login({email: email.value, password: password.value});
+    }
+  }
+
+  function registration() {
+    if (isValid()) {
+      authStore.registration({email: email.value, password: password.value});
     }
   }
 
@@ -72,8 +90,8 @@ setup() {
   return {
     email, emailErr,
     password, passwordErr,
-    signUpOrSignIn,
-    authStore
+    login, registration,
+    authStore, store
   }
 }
 }

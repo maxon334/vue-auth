@@ -8,10 +8,18 @@ export const useStore = defineStore('store', () => {
 
   let showMessage = ref(false);
   const isModalOpen = ref(false);
+  let isLoading = ref(false);
+
+  function setLoading(value) {
+    isLoading.value = value
+    console.log(isLoading.value)
+  }
 
   return {
     showMessage,
-    isModalOpen
+    isModalOpen,
+    isLoading,
+    setLoading
   }
 });
 

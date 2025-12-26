@@ -14,9 +14,12 @@ class UserService {
         }
         const hashPassword = await bcrypt.hash(password, 3);
         const activationLink = uuid.v4(); // v34fa-asfasf-142saf-sa-asf
-
         const user = await UserModel.create({email, password: hashPassword, activationLink})
-        await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
+        try {
+            await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
+        } catch (e) {
+            console.error(e)
+        }
 
         const userDto = new UserDto(user); // id, email, isActivated
         const tokens = tokenService.generateTokens({...userDto});
@@ -61,6 +64,7 @@ class UserService {
         }
         const userData = tokenService.validateRefreshToken(refreshToken);
         const tokenFromDb = await tokenService.findToken(refreshToken);
+
         if (!userData || !tokenFromDb) {
             throw ApiError.UnauthorizedError();
         }
@@ -70,11 +74,6 @@ class UserService {
 
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
         return {...tokens, user: userDto}
-    }
-
-    async getAllUsers() {
-        const users = await UserModel.find();
-        return users;
     }
 }
 

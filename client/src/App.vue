@@ -1,5 +1,5 @@
 <template>
-  <main-layout v-if="localStorage.hasOwnProperty('token')" />
+  <main-layout v-if="authStore.token" />
   <auth-layout v-else />
 </template>
 

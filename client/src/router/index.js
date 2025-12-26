@@ -7,6 +7,7 @@ import Help from "@/views/Help.vue";
 import request from "@/views/Request.vue";
 import {useAlertStore} from "@/stores/alertStore.js";
 import NotFound from '@/views/NotFound.vue'
+import EmailActivated from '@/views/EmailActivated.vue'
 
 
 
@@ -56,20 +57,16 @@ const router = createRouter({
       component: NotFound
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      // component: () => import(''),
-    },
+      path: '/email-activation',
+      name: 'email-activation',
+      component: EmailActivated
+    }
   ],
   linkActiveClass: 'active',
   linkExactActiveClass: 'active'
 })
 
 router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore();
   const isAuthRequired = to.meta.auth;
 
   if (!localStorage.getItem('token') && isAuthRequired) {
@@ -82,3 +79,13 @@ router.beforeEach((to, from, next) => {
 
 
 export default router
+
+
+// {
+//   path: '/about',
+//   name: 'about',
+//   // route level code-splitting
+//   // this generates a separate chunk (About.[hash].js) for this route
+//   // which is lazy-loaded when the route is visited.
+//   // component: () => import(''),
+// },

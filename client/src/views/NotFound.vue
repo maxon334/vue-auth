@@ -1,5 +1,5 @@
 <template>
-  <app-page title="404. Not Found">
+  <app-page title="❌ 404. Not Found ❌">
     <div class="not-found">
       <p>Страницы не существует</p>
       <router-link to="/auth">Перейти к аутентификации</router-link>

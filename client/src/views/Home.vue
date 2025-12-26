@@ -16,9 +16,12 @@
 </template>
 
 <script>
+import { onMounted, ref } from "vue";
 import { useStore } from "@/stores/store.js";
 import { useAlertStore } from "@/stores/alertStore.js";
 import { useAuthStore } from "@/stores/authStore.js";
+import {useRequestsStore} from "@/stores/requests.js";
+import { $app } from '@/http/axios.js'
 
 import AppPage from '../components/ui/AppPage.vue'
 import RequestTable from '../components/request/RequestTable.vue'
@@ -28,9 +31,8 @@ import AppModal from '../components/ui/AppModal.vue'
 import AppLoader from '../components/ui/AppLoader.vue'
 import TheNavbar from "@/components/TheNavbar.vue";
 import TheSidebar from "@/components/TheSidebar.vue";
-import { ref } from "vue";
 import AppMessage from "@/components/ui/AppMessage.vue";
-import {useRequestsStore} from "@/stores/requests.js";
+
 
 export default {
   setup() {
@@ -40,6 +42,10 @@ export default {
     const requestsStore = useRequestsStore();
 
     const isModalOpen = ref(false);
+
+    onMounted(async () => {
+
+    });
 
     return {
       store, alertStore, authStore, requestsStore,
