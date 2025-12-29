@@ -51,12 +51,10 @@ export const useRequestsStore = defineStore('filtering', () => {
   }
 
   async function getRequestsByID() {
-    useStore().setLoading(true);
     try {
       const res = await $app.get('/api/requests/' + useAuthStore().user.id);
       setRequests(res.data.data)
     } catch (e) {console.log(e)}
-    useStore().setLoading(false);
   }
 
   async function getRequestByID(id) {

@@ -50,16 +50,23 @@ export default {
 
     const isModalOpen = ref(false);
 
-    authStore.$subscribe(async (mutation) => {
-      if (mutation.events.newValue.id) {
-        await requestsStore.getRequestsByID();
-      }
-    });
+    // authStore.$subscribe(async (mutation) => {
+    //   if (mutation.events.newValue.id) {
+    //     await requestsStore.getRequestsByID();
+    //   }
+    // });
 
     onMounted(async () => {
+      useStore().setLoading(true);
+      authStore.$subscribe(async (mutation) => {
+        if (mutation.events.newValue.id) {
+          await requestsStore.getRequestsByID();
+        }
+      });
       try {
         await useRequestsStore().getRequestsByID();
       } catch (e) {console.log(e)}
+      useStore().setLoading(false);
     })
 
     return {
