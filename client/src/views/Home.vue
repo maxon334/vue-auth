@@ -2,16 +2,17 @@
     <verify-email v-if="!authStore.isVerified" />
     <app-page v-if="!loading">
       <button :disabled="!authStore.isAuthenticated" class="btn primary" style="position: absolute; right: 20px; top: 20px"
-              @click="store.isModalOpen = !store.isModalOpen">Создать
+              @click="isModalOpen = true">Создать
       </button>
 
       <request-filter ></request-filter>
       <request-table :requests="requestsStore.filterRequests().value"></request-table>
       <teleport to="body">
-        <app-modal title="Создание пользователя" v-if="store.isModalOpen">
-          <request-modal />
+        <app-modal title="Создание пользователя" v-if="isModalOpen" @close="closeModal">
+          <request-modal @close="closeModal" />
         </app-modal>
       </teleport>
+      {{ requests ? requests : 'Ничего' }}
     </app-page>
     <teleport to="body">
       <app-message v-if="alertStore.alert.show" :type="alertStore.alert.type" :text="alertStore.alert.text" />
@@ -42,15 +43,16 @@ export default {
     const alertStore = useAlertStore();
     const authStore = useAuthStore();
     const requestsStore = useRequestsStore();
+    const isModalOpen = ref(false);
+
+    let requests = ref([]);
+    let loading = ref(false);
 
     alertStore.closeAlert();
 
-    const isModalOpen = ref(false);
-
-    let loading = ref(false);
-
-    const requests = computed(requestsStore.requests);
-    console.log(requests)
+    function closeModal() {
+      isModalOpen.value = false
+    }
 
     onMounted(async () => {
       loading.value = true;
@@ -63,12 +65,15 @@ export default {
         await useRequestsStore().getRequestsByID();
       } catch (e) {console.log(e)}
       loading.value = false;
+      requests.value = requestsStore.getRequests();
     })
 
     return {
       store, alertStore, authStore, requestsStore,
       isModalOpen, useStore,
-      loading
+      loading,
+      closeModal,
+      requests
     }
   },
   components: {

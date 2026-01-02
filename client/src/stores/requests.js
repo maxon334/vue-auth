@@ -1,16 +1,12 @@
 import {defineStore} from "pinia";
 import {ref, computed, reactive, toRaw, isReactive, isRef} from "vue";
 import router from "@/router/index.js";
-import axios from "axios";
 import {useAlertStore} from "@/stores/alertStore.js";
 import { $app } from '@/http/axios.js'
 import { useAuthStore } from '@/stores/authStore.js'
-import { useStore } from '@/stores/store.js'
-
 
 export const useRequestsStore = defineStore('filtering', () => {
   const alertStore = useAlertStore();
-  const authStore = useAuthStore();
 
   let requests = ref([]);
   let nameFilter = ref('');
@@ -23,37 +19,38 @@ export const useRequestsStore = defineStore('filtering', () => {
     statusFilter.value = value
   }
 
+  function getRequests() {
+    return requests
+  }
+
   function setRequests(reqs) {
     requests.value = reqs
   }
 
   // фильтрация запросов при вводе в поле с именем и статусом
-  // function filterRequests() {
-  //   return computed(() => {
-  //     return requests.value.filter(item => {
-  //       if (nameFilter.value !== '' && statusFilter.value !== '') {
-  //         if (item.fullName.toLowerCase().startsWith(nameFilter.value.toLowerCase()) && item.status === statusFilter.value) {
-  //           return item
-  //         }
-  //       } else if (nameFilter.value === '' && statusFilter.value !== '') {
-  //         if (item.status === statusFilter.value) {
-  //           return item
-  //         }
-  //       } else if (nameFilter.value !== '' && statusFilter.value === '') {
-  //         if (item.fullName.toLowerCase().startsWith(nameFilter.value.toLowerCase())) {
-  //           return item
-  //         }
-  //       } else if (nameFilter.value === '' && statusFilter.value === '') {
-  //         return item
-  //       }
-  //     })
-  //   })
-  // }
-  // function filterRequests() {
-  //   return computed(() => {
-  //     return requests.value.filter(item => console.log(item))
-  //   })
-  // }
+  function filterRequests() {
+    return computed(() => {
+      return requests.value
+        .filter(item => {
+          if (nameFilter.value) {
+            if (item.fullName.toLowerCase().startsWith(nameFilter.value.toLowerCase())) {
+              return item
+            }
+          } else {
+            return item
+          }
+        })
+        .filter(item => {
+          if (statusFilter.value) {
+            if (item.status === statusFilter.value) {
+              return item
+            }
+          } else {
+            return item
+          }
+        })
+    })
+  }
 
   async function getRequestsByID() {
     try {
@@ -112,6 +109,7 @@ export const useRequestsStore = defineStore('filtering', () => {
     deleteUser,
     requests,
     setRequests,
+    getRequests,
     getRequestsByID,
     getRequestByID
   }

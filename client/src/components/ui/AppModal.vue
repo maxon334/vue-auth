@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-backdrop" @click="useStore().isModalOpen = false"></div>
+  <div class="modal-backdrop" @click="$emit('close')"></div>
   <div class="modal">
     <h3>{{ title }}</h3>
     <slot />
@@ -15,7 +15,8 @@ export default {
       useStore
     }
   },
-  props: ['title']
+  props: ['title'],
+  emits: ['close']
 }
 </script>
 

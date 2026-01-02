@@ -51,7 +51,8 @@ import AppLoader from '@/components/ui/AppLoader.vue'
 
 export default {
   components: { AppLoader },
-  setup() {
+  emits: ['close'],
+  setup(_, { emit }) {
     const alertStore = useAlertStore()
     const store = useStore()
     const requestsStore = useRequestsStore()
@@ -103,11 +104,11 @@ export default {
         const req = { userID: authStore.user.id, name, phone, sum, status }
         try {
           await requestsStore.addNewRequest(req);
-          store.isModalOpen = false;
         } catch (e) {
           console.error(e)
         }
       }
+      emit('close');
       loading.value = false;
     }
 
