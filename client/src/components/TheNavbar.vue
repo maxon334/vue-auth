@@ -24,27 +24,17 @@
   </nav>
 </template>
 
-<script>
+<script setup>
 import { useStore } from "@/stores/store.js";
 import { useAuthStore } from "@/stores/authStore.js";
 
-export default {
-setup() {
-  const store = useStore();
-  const authStore = useAuthStore();
+const store = useStore();
+const authStore = useAuthStore();
 
-  function logout(navigate) {
-    authStore.logout();
-    navigate()
-  }
-  return {
-    store,
-    logout
-  }
-}
+function logout(navigate) {
+  authStore.logout();
+  navigate()
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

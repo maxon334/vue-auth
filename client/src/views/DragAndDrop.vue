@@ -2,77 +2,87 @@
   <div class="kanban-board">
     <!-- 4 колонки для drag-and-drop -->
     <div class="columns-container">
-      <!-- Колонка 1: Новые -->
-      <div class="column">
-        <div class="column-header new">
-          <h3>Новые</h3>
-          <span class="count-badge">{{ newItems.length }}</span>
-        </div>
-        <draggable
-          v-model="newItems"
-          group="tickets"
-          item-key="id"
-          class="cards-container"
-          @end="handleDragEnd"
-        >
-        <DragNDropCard :ticket="{ status: 'active', name: 'Maxon', phone: '89108301252', amount: 12312 }" />
-        </draggable>
-      </div>
-
-      <!-- Колонка 2: Активные -->
+      <!-- Колонка 1: Активные заявки -->
       <div class="column">
         <div class="column-header active">
-          <h3>Активные</h3>
-          <span class="count-badge">{{ activeItems.length }}</span>
+          <h3>Новые</h3>
+          <span class="count-badge">{{ activeRequests.length }}</span>
         </div>
         <draggable
-          v-model="activeItems"
+          v-model="activeRequests"
           group="tickets"
           item-key="id"
           class="cards-container"
           @end="handleDragEnd"
         >
-          <template #item="{ element }">
-            <DragNDropCard :ticket="element" />
-          </template>
+          <DragNDropCard
+            v-for="card in activeRequests"
+            :key="card.id"
+            :ticket="{ name: card.name, phone: card.phone }"
+          />
         </draggable>
       </div>
 
-      <!-- Колонка 3: На проверке -->
-      <div class="column">
-        <div class="column-header pending">
-          <h3>На проверке</h3>
-          <span class="count-badge">{{ pendingItems.length }}</span>
-        </div>
-        <draggable
-          v-model="pendingItems"
-          group="tickets"
-          item-key="id"
-          class="cards-container"
-          @end="handleDragEnd"
-        >
-          <template #item="{ element }">
-            <DragNDropCard :ticket="element" />
-          </template>
-        </draggable>
-      </div>
-
-      <!-- Колонка 4: Выполненные -->
+      <!-- Колонка 2: Выполненные заявки -->
       <div class="column">
         <div class="column-header completed">
           <h3>Выполненные</h3>
-          <span class="count-badge">{{ completedItems.length }}</span>
+          <span class="count-badge">{{ doneRequests.length }}</span>
         </div>
         <draggable
-          v-model="completedItems"
+          v-model="doneRequests"
           group="tickets"
           item-key="id"
           class="cards-container"
           @end="handleDragEnd"
         >
-          <template #item="{ element }">
-            <DragNDropCard :ticket="element" />
-          </template>
+          <DragNDropCard
+            v-for="card in doneRequests"
+            :key="card.id"
+            :ticket="{ name: card.name, phone: card.phone }"
+          />
+        </draggable>
+      </div>
+
+      <!-- Колонка 3: Заявки на проверке -->
+      <div class="column">
+        <div class="column-header pending">
+          <h3>На проверке</h3>
+          <span class="count-badge">{{ pendingRequests.length }}</span>
+        </div>
+        <draggable
+          v-model="pendingRequests"
+          group="tickets"
+          item-key="id"
+          class="cards-container"
+          @end="handleDragEnd"
+        >
+          <DragNDropCard
+            v-for="card in pendingRequests"
+            :key="card.id"
+            :ticket="{ name: card.name, phone: card.phone }"
+          />
+        </draggable>
+      </div>
+
+      <!-- Колонка 4: Отмененные заявки -->
+      <div class="column">
+        <div class="column-header cancelled">
+          <h3>Отмененные</h3>
+          <span class="count-badge">{{ cancelledRequests.length }}</span>
+        </div>
+        <draggable
+          v-model="cancelledRequests"
+          group="tickets"
+          item-key="id"
+          class="cards-container"
+          @end="handleDragEnd"
+        >
+          <DragNDropCard
+            v-for="card in cancelledRequests"
+            :key="card.id"
+            :ticket="{ name: card.name, phone: card.phone }"
+          />
         </draggable>
       </div>
     </div>
@@ -80,39 +90,37 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { VueDraggableNext as draggable } from 'vue-draggable-next'
 import DragNDropCard from '../components/drag-n-drop/DragNDropCard.vue'
+import { useRequestsStore } from '@/stores/requests.js'
+import {useAuthStore} from '@/stores/authStore.js'
 
-// Исходные данные из скриншота
-const newItems = ref([
-  {
-    id: 2,
-    number: 2,
-    contact: '3413123', // В исходнике здесь телефон вместо ФИО
-    phone: '13123123',
-    amount: '1 323 123 ₽',
-    status: 'active'
-  }
-])
-
-const activeItems = ref([])
-const pendingItems = ref([])
-
-const completedItems = ref([
-  {
-    id: 1,
-    number: 1,
-    name: 'Соколов М.Е.',
-    phone: '423423',
-    amount: '234 234 ₽',
-    status: 'completed'
-  }
-])
+const requestsStore = useRequestsStore()
+const authStore = useAuthStore()
+const activeRequests = ref([{ name: 'Maxon', phone: '89108301252' }])
+const doneRequests = ref([])
+const pendingRequests = ref([])
+const cancelledRequests = ref([])
+const loading = ref(false)
 
 const handleDragEnd = (event) => {
-  console.log('Элемент перемещен:', event.draggedContext.element)
+  console.log('Элемент перемещен')
 }
+
+onMounted(async () => {
+  loading.value = true;
+  authStore.$subscribe(async (mutation) => {
+    if (mutation.events.newValue.id) {
+      await requestsStore.getRequestsByID();
+    }
+  });
+  try {
+    await useRequestsStore().getRequestsByID();
+  } catch (e) {console.log(e)}
+  loading.value = false;
+
+})
 </script>
 
 <style scoped>
@@ -152,7 +160,6 @@ const handleDragEnd = (event) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
 }
 
 .column-header h3 {
@@ -163,12 +170,12 @@ const handleDragEnd = (event) => {
 }
 
 /* Цвета заголовков колонок */
-.column-header.new {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+.column-header.cancelled {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
 }
 
 .column-header.active {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, #059669, #10b981);
 }
 
 .column-header.pending {
@@ -176,7 +183,7 @@ const handleDragEnd = (event) => {
 }
 
 .column-header.completed {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #065f46, #047857);
 }
 
 .count-badge {
@@ -219,7 +226,6 @@ const handleDragEnd = (event) => {
   .columns-container {
     grid-template-columns: repeat(4, 1fr);
   }
-
 }
 
 @media (max-width: 768px) {

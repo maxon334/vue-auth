@@ -7,40 +7,27 @@
   </app-page>
 </template>
 
-<script>
+<script setup>
 import {ref} from 'vue';
 import AppPage from '@/components/ui/AppPage.vue'
-import {useAlertStore} from '@/stores/alertStore.js'
 import { $app } from '@/http/axios.js';
 import { useAuthStore } from '@/stores/authStore.js'
 
-export default {
-  setup() {
-    let disabled = ref(false);
-    let timer = ref(false);
-    const URL = 'http://localhost:5000' // !!!
-    async function submit() {
-      await $app.post('/api/mail', {to: useAuthStore().user.email, link: URL + '/api/activate/' + useAuthStore().user.activationLink})
-      const time = (Date.now() / 1000) + 5
-      const interval = setInterval(() => {
-        disabled.value = true
-        timer.value = Math.ceil(time - Date.now() / 1000);
-        if (timer.value === 0) {
-          clearInterval(interval);
-          timer.value = false;
-          disabled.value = false
-        }
-      }, 1000);
-
+let disabled = ref(false);
+let timer = ref(false);
+const URL = 'http://localhost:5000' // !!!
+async function submit() {
+  await $app.post('/api/mail', {to: useAuthStore().user.email, link: URL + '/api/activate/' + useAuthStore().user.activationLink})
+  const time = (Date.now() / 1000) + 5
+  const interval = setInterval(() => {
+    disabled.value = true
+    timer.value = Math.ceil(time - Date.now() / 1000);
+    if (timer.value === 0) {
+      clearInterval(interval);
+      timer.value = false;
+      disabled.value = false
     }
-    return {
-      useAlertStore,
-      submit,
-      disabled,
-      timer
-    }
-  },
-  components: { AppPage },
+  }, 1000);
 }
 </script>
 

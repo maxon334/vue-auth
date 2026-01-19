@@ -8,12 +8,8 @@
   </app-page>
 </template>
 
-<script>
+<script setup>
 import AppPage from '@/components/ui/AppPage.vue'
-
-export default {
-  components: { AppPage },
-}
 </script>
 
 <style lang="css" scoped>
@@ -23,6 +19,5 @@ export default {
   font-size: 20px;
   line-height: 1.6;
 }
-
 </style>
 

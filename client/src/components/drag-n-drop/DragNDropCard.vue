@@ -1,5 +1,5 @@
 <template>
-  <div class="ticket-card" :class="[{ dragging }]">
+  <div class="ticket-card">
     <div class="card-content">
       <!-- Контактная информация -->
       <div class="contact-info">
@@ -17,26 +17,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
-const props = defineProps({
+defineProps({
   ticket: {
     type: Object,
     required: true
   }
 })
-
-const dragging = ref(false)
-
-const getStatusText = (status) => {
-  const statusMap = {
-    new: 'Новый',
-    active: 'Активен',
-    pending: 'На проверке',
-    completed: 'Выполнен'
-  }
-  return statusMap[status] || status
-}
 
 const formatPhone = (phone) => {
   if (!phone) return ''
@@ -45,11 +31,6 @@ const formatPhone = (phone) => {
     return `+${cleaned[0]} (${cleaned.slice(1,4)}) ${cleaned.slice(4,7)}-${cleaned.slice(7,9)}-${cleaned.slice(9)}`
   }
   return phone
-}
-
-const openTicket = () => {
-  console.log('Открыть карточку:', props.ticket.id)
-  // Здесь логика открытия деталей
 }
 </script>
 
@@ -105,6 +86,10 @@ const openTicket = () => {
 .contact-phone .value {
   font-family: 'SF Mono', monospace;
   color: #374151;
+}
+
+.contact-phone {
+  margin-bottom: 0;
 }
 
 /* Футер карточки */

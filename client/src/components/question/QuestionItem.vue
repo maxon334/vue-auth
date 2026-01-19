@@ -6,18 +6,14 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from "vue";
 import TheNavbar from "@/components/TheNavbar.vue";
 
-export default {
-  components: {TheNavbar},
-props: ['question'],
-  setup() {
-    const isOpen = ref(false);
-    return { isOpen }
-  }
-}
+defineProps({
+  question: Object
+})
+const isOpen = ref(false);
 
 </script>
 

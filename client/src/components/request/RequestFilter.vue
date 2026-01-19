@@ -16,40 +16,27 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import {ref} from "vue";
 import {useRequestsStore} from "@/stores/requests.js";
 
-export default {
-setup() {
-  const requestsStore = useRequestsStore();
-  const name = ref('');
-  const status = ref('');
+const requestsStore = useRequestsStore();
+const name = ref('');
+const status = ref('');
 
-  function nameInput() {
-    requestsStore.setName(name.value);
-    requestsStore.filterRequests();
-  }
-
-  function statusInput() {
-    requestsStore.setStatus(status.value);
-    requestsStore.filterRequests()
-  }
-
-  function resetFilter() {
-    name.value = '';
-    status.value = '';
-    requestsStore.setName(name.value);
-    requestsStore.setStatus(status.value);
-  }
-
-  return {
-    name,
-    status,
-    resetFilter,
-    nameInput, statusInput
-  }
+function nameInput() {
+  requestsStore.setName(name.value);
 }
+
+function statusInput() {
+  requestsStore.setStatus(status.value);
+}
+
+function resetFilter() {
+  name.value = '';
+  status.value = '';
+  requestsStore.setName(name.value);
+  requestsStore.setStatus(status.value);
 }
 </script>
 

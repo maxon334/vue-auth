@@ -3,19 +3,10 @@
   <auth-layout v-else />
 </template>
 
-<script>
+<script setup>
 import { useAuthStore } from "@/stores/authStore.js";
 import MainLayout from "@/layout/MainLayout.vue";
 import AuthLayout from "@/layout/AuthLayout.vue";
 
-export default {
-  setup() {
-    const authStore = useAuthStore();
-    return {
-      authStore, localStorage
-    }
-  },
-  components: {AuthLayout, MainLayout}
-
-}
+const authStore = useAuthStore();
 </script>

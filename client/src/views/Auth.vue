@@ -26,9 +26,8 @@
   </form>
 </template>
 
-<script>
+<script setup>
 import { useAuthStore } from "@/stores/authStore.js";
-import { useStore } from '@/stores/store.js'
 import { ref } from "vue";
 import {useRoute} from "vue-router";
 import { useForm } from 'vee-validate';
@@ -37,77 +36,60 @@ import * as yup from 'yup';
 import {useAlertStore} from "@/stores/alertStore.js";
 import AppLoader from '@/components/ui/AppLoader.vue'
 
-export default {
-  components: { AppLoader },
-  setup() {
-    const authStore = useAuthStore();
-    const alertStore = useAlertStore();
-    const store = useStore();
+const authStore = useAuthStore();
+const alertStore = useAlertStore();
 
-    let isEmailValid = ref(false);
-    let isPasswordValid = ref(false);
+let isEmailValid = ref(false);
+let isPasswordValid = ref(false);
 
-    let loading = ref(false);
+let loading = ref(false);
 
-    const { errors, defineField, meta, setFieldError, validateField } = useForm({
-      validationSchema: yup.object({
-        email: yup.string().email('Неверный email').required('Поле не должно быть пустым'),
-        password: yup.string().min(6, 'Минимум 6 символов').required('Поле не должно быть пустым'),
-      }),
-    });
+const { errors, defineField, meta, setFieldError, validateField } = useForm({
+  validationSchema: yup.object({
+    email: yup.string().email('Неверный email').required('Поле не должно быть пустым'),
+    password: yup.string().min(6, 'Минимум 6 символов').required('Поле не должно быть пустым'),
+  }),
+});
 
-    const [email, emailAttrs] = defineField('email');
-    const [password, passwordAttrs] = defineField('password');
+const [email, emailAttrs] = defineField('email');
+const [password, passwordAttrs] = defineField('password');
 
-    // Если поле валидно - показываем это(класс valid)
-    async function isFieldValid(validate) {
-      if (validate === 'email') {
-        isEmailValid.value = (await validateField(validate)).valid
-      } else if (validate === 'password') {
-        isPasswordValid.value = (await validateField(validate)).valid
-      }
-    }
-
-    if (useRoute().query.message) {
-      alertStore.changeAlert(true, 'danger', 'Войдите в систему, чтобы получить доступ!');
-    }
-
-    function isValid() {
-      if (meta.value.valid) {
-        return true
-      } else {
-        if (!isEmailValid.value) setFieldError('email', 'Заполните поле');
-        if (!isPasswordValid.value) setFieldError('password', 'Заполните поле');
-      }
-    }
-
-    async function login() {
-      loading.value = true;
-      if (isValid()) {
-        await authStore.login({email: email.value, password: password.value});
-      }
-      loading.value = false;
-    }
-
-    async function registration() {
-      loading.value = true;
-      if (isValid()) {
-        await authStore.registration({email: email.value, password: password.value});
-      }
-      loading.value = false;
-    }
-
-    return {
-      email, emailAttrs,
-      password, passwordAttrs,
-      errors,
-      login, registration,
-      authStore, store,
-      isFieldValid,
-      isEmailValid, isPasswordValid,
-      loading
-    }
+// Если поле валидно - показываем это(класс valid)
+async function isFieldValid(validate) {
+  if (validate === 'email') {
+    isEmailValid.value = (await validateField(validate)).valid
+  } else if (validate === 'password') {
+    isPasswordValid.value = (await validateField(validate)).valid
   }
+}
+
+if (useRoute().query.message) {
+  alertStore.changeAlert(true, 'danger', 'Войдите в систему, чтобы получить доступ!');
+}
+
+function isValid() {
+  if (meta.value.valid) {
+    return true
+  } else {
+    if (!isEmailValid.value) setFieldError('email', 'Заполните поле');
+    if (!isPasswordValid.value) setFieldError('password', 'Заполните поле');
+  }
+}
+
+async function login() {
+  loading.value = true;
+  if (isValid()) {
+    await authStore.login({email: email.value, password: password.value});
+  }
+  loading.value = false;
+}
+
+async function registration() {
+  loading.value = true;
+  if (isValid()) {
+    await authStore.registration({email: email.value, password: password.value});
+  }
+  loading.value = false;
 }
 </script>
 

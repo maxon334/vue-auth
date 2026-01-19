@@ -8,18 +8,8 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { useStore } from "@/stores/store.js";
-
-export default {
-setup() {
-  return {
-    useStore
-  }
-}
-}
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

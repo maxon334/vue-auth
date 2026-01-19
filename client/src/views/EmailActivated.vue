@@ -4,12 +4,8 @@
   </app-page>
 </template>
 
-<script>
+<script setup>
 import AppPage from '@/components/ui/AppPage.vue'
-
-export default {
-  components: { AppPage },
-}
 </script>
 
 <style lang="css" scoped></style>

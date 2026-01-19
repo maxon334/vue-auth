@@ -2,10 +2,10 @@
   <div class="loader" :class="type"></div>
 </template>
 
-<script>
-  export default {
-    props: ['type']
-  }
+<script setup>
+defineProps({
+  type: String
+})
 </script>
 
 <style scoped>

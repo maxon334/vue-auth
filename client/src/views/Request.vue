@@ -21,10 +21,8 @@
   </app-page>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted, watch } from 'vue'
-import { useStore } from '@/stores/store.js'
-import { useAlertStore } from '@/stores/alertStore.js'
 import { useRequestsStore } from '@/stores/requests.js'
 import { formatCurrency } from '@/utils/currency.js'
 
@@ -32,33 +30,26 @@ import AppPage from '@/components/ui/AppPage.vue'
 import AppStatus from '@/components/ui/AppStatus.vue'
 import AppLoader from '@/components/ui/AppLoader.vue'
 
-export default {
-  setup({ id }) {
-    const store = useStore();
-    const alertStore = useAlertStore();
-    const requestsStore = useRequestsStore();
-    let item = ref(null);
-    let status = ref(null);
+const props = defineProps({
+  id: String
+})
+const requestsStore = useRequestsStore();
+let item = ref(null);
+let status = ref(null);
 
-    let loading = ref(false);
-    let isChanged = ref(false)
+let loading = ref(false);
+let isChanged = ref(false)
 
-    onMounted(async () => {
-      loading.value = true
-      item.value = (await requestsStore.getRequestByID(id)).data.data
-      status.value = item.value.status
-      loading.value = false
+onMounted(async () => {
+  loading.value = true
+  item.value = (await requestsStore.getRequestByID(props.id)).data.data
+  status.value = item.value.status
+  loading.value = false
 
-      watch(status, () => {
-        isChanged.value = true
-      })
-    })
-
-    return { item, store, status, alertStore, requestsStore, loading, isChanged, formatCurrency }
-  },
-  components: { AppPage, AppStatus, AppLoader },
-  props: ['id'],
-}
+  watch(status, () => {
+    isChanged.value = true
+  })
+})
 </script>
 
 <style scoped></style>

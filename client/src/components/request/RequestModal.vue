@@ -35,94 +35,70 @@
   </form>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue'
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
-import {isMobilePhone} from 'validator'
-
-import { useStore } from '@/stores/store.js'
+import { isMobilePhone } from 'validator'
 import { useRequestsStore } from '@/stores/requests.js'
 import { useAuthStore } from '@/stores/authStore.js'
 import AppLoader from '@/components/ui/AppLoader.vue'
 
+const emits = defineEmits(['close'])
+const requestsStore = useRequestsStore()
+const authStore = useAuthStore()
 
+const { errors, defineField, meta, setFieldError, validateField } = useForm({
+  validationSchema: yup.object({
+    name: yup.string().min(2, 'Минимум 2 символа').max(50, 'Максимум 50 символов').required('Поле не должно быть пустым'),
+    phone: yup.string().min(1, 'Неверный номер').max(15, 'Неверный номер').required('Поле не должно быть пустым'),
+    sum: yup.string().min(1, 'Неверная сумма').max(15, 'Неверная сумма').required('Поле не должно быть пустым'),
+  }),
+});
 
-export default {
-  components: { AppLoader },
-  emits: ['close'],
-  setup(_, { emit }) {
-    const store = useStore()
-    const requestsStore = useRequestsStore()
-    const authStore = useAuthStore()
+const [name, nameAttrs] = defineField('name');
+const [phone, phoneAttrs] = defineField('phone');
+const [sum, sumAttrs] = defineField('sum');
 
-    let isNameValid = ref(false);
-    let isPhoneValid = ref(false);
-    let isSumValid = ref(false);
+let isNameValid = ref(false);
+let isPhoneValid = ref(false);
+let isSumValid = ref(false);
+let status = ref('active');
+let loading = ref(false);
 
-    let status = ref('active');
-    let loading = ref(false);
+function isValid() {
+  if (meta.value.valid) {
+    return true
+  } else {
+    if (!isNameValid.value) setFieldError('name', 'Заполните поле');
+    if (!isPhoneValid.value) setFieldError('phone', 'Заполните поле');
+    if (!isSumValid.value) setFieldError('sum', 'Заполните поле');
+  }
+}
 
-    const { errors, defineField, meta, setFieldError, validateField } = useForm({
-      validationSchema: yup.object({
-        name: yup.string().min(2, 'Минимум 2 символа').max(50, 'Максимум 50 символов').required('Поле не должно быть пустым'),
-        phone: yup.string().min(1, 'Неверный номер').max(15, 'Неверный номер').required('Поле не должно быть пустым'),
-        sum: yup.string().min(1, 'Неверная сумма').max(15, 'Неверная сумма').required('Поле не должно быть пустым'),
-      }),
-    });
+// Если поле валидно - показываем это(класс valid)
+async function isFieldValid(validate) {
+  if (validate === 'name') {
+    isNameValid.value = (await validateField(validate)).valid
+  } else if (validate === 'phone') {
+    isPhoneValid.value = await isMobilePhone(`${phone.value}`)
+  } else if (validate === 'sum') {
+    isSumValid.value = (await validateField(validate)).valid
+  }
+}
 
-    const [name, nameAttrs] = defineField('name');
-    const [phone, phoneAttrs] = defineField('phone');
-    const [sum, sumAttrs] = defineField('sum');
-
-    function isValid() {
-      if (meta.value.valid) {
-        return true
-      } else {
-        if (!isNameValid.value) setFieldError('name', 'Заполните поле');
-        if (!isPhoneValid.value) setFieldError('phone', 'Заполните поле');
-        if (!isSumValid.value) setFieldError('sum', 'Заполните поле');
-      }
+async function createPerson() {
+  loading.value = true;
+  if (isValid()) {
+    const req = { userID: authStore.user.id, name, phone, sum, status }
+    try {
+      await requestsStore.addNewRequest(req);
+      emits('close')
+    } catch (e) {
+      console.error(e)
     }
-
-    // Если поле валидно - показываем это(класс valid)
-    async function isFieldValid(validate) {
-      if (validate === 'name') {
-        isNameValid.value = (await validateField(validate)).valid
-      } else if (validate === 'phone') {
-        isPhoneValid.value = await isMobilePhone(`${phone.value}`)
-      } else if (validate === 'sum') {
-        isSumValid.value = (await validateField(validate)).valid
-      }
-    }
-
-    async function createPerson() {
-      loading.value = true;
-      if (isValid()) {
-        const req = { userID: authStore.user.id, name, phone, sum, status }
-        try {
-          await requestsStore.addNewRequest(req);
-        } catch (e) {
-          console.error(e)
-        }
-      }
-      emit('close');
-      loading.value = false;
-    }
-
-    return {
-      createPerson,
-      name, nameAttrs,
-      phone, phoneAttrs,
-      sum, sumAttrs,
-      status,
-      store,
-      isFieldValid,
-      errors,
-      isNameValid, isPhoneValid, isSumValid,
-      loading
-    }
-  },
+  }
+  loading.value = false;
 }
 </script>
 

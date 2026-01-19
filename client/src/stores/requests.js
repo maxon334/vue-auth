@@ -1,8 +1,8 @@
 import {defineStore} from "pinia";
 import {ref, computed} from "vue";
 import router from "@/router/index.js";
-import {useAlertStore} from "@/stores/alertStore.js";
 import { $app } from '@/http/axios.js'
+import {useAlertStore} from "@/stores/alertStore.js";
 import { useAuthStore } from '@/stores/authStore.js'
 
 export const useRequestsStore = defineStore('filtering', () => {
@@ -24,29 +24,27 @@ export const useRequestsStore = defineStore('filtering', () => {
   }
 
   // фильтрация запросов при вводе в поле с именем и статусом
-  function filterRequests() {
-    return computed(() => {
-      return requests.value
-        .filter(item => {
-          if (nameFilter.value) {
-            if (item.fullName.toLowerCase().startsWith(nameFilter.value.toLowerCase())) {
-              return item
-            }
-          } else {
-            return item
-          }
-        })
-        .filter(item => {
-          if (statusFilter.value) {
-            if (item.status === statusFilter.value) {
-              return item
-            }
-          } else {
-            return item
-          }
-        })
+  const filteredRequests = computed(() =>
+    requests.value
+    .filter(item => {
+      if (nameFilter.value) {
+        if (item.fullName.toLowerCase().startsWith(nameFilter.value.toLowerCase())) {
+          return item
+        }
+      } else {
+        return item
+      }
     })
-  }
+    .filter(item => {
+      if (statusFilter.value) {
+        if (item.status === statusFilter.value) {
+          return item
+        }
+      } else {
+        return item
+      }
+    })
+  )
 
   async function getRequestsByID() {
     try {
@@ -78,7 +76,7 @@ export const useRequestsStore = defineStore('filtering', () => {
       console.log(e);
       alertStore.changeAlert(true, 'danger', 'Что-то пошло не так...')
     }
-}
+  }
 
   async function changeReqState(id, status) {
     try {
@@ -98,13 +96,13 @@ export const useRequestsStore = defineStore('filtering', () => {
 
   return {
     nameFilter, statusFilter,
-    filterRequests,
     setStatus, setName,
     addNewRequest,
     changeReqState,
     deleteUser,
     requests,
     getRequestsByID,
-    getRequestByID
+    getRequestByID,
+    filteredRequests
   }
 })

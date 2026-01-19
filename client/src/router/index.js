@@ -14,7 +14,7 @@ const router = createRouter({
     {
       path: '/requests',
       name: 'requests',
-      component: Home,
+      component: () => import('@/views/Home.vue'),
       meta: {
         layout: 'main',
         auth: true
@@ -23,7 +23,7 @@ const router = createRouter({
     {
       path: '/help',
       name: 'help',
-      component: Help,
+      component: () => import('@/views/Help.vue'),
       meta: {
         layout: 'main',
         auth: true
@@ -32,7 +32,7 @@ const router = createRouter({
     {
       path: '/request/:id?',
       name: 'request',
-      component: request,
+      component: () => import('@/views/Request.vue'),
       props: true,
       meta: {
         layout: 'main',
@@ -42,7 +42,7 @@ const router = createRouter({
     {
       path: '/auth',
       name: 'auth',
-      component: Auth,
+      component: () => import('@/views/Auth.vue'),
       meta: {
         layout: 'auth',
         auth: false
@@ -51,17 +51,17 @@ const router = createRouter({
     {
       path: '/:notFound(.*)',
       name: 'NotFound',
-      component: NotFound
+      component: () => import('@/views/NotFound.vue'),
     },
     {
       path: '/email-activation',
       name: 'email-activation',
-      component: EmailActivated
+      component: () => import('@/views/EmailActivated.vue'),
     },
     {
       path: '/drag-n-drop',
       name: 'drag-n-drop',
-      component: DragAndDrop
+      component: () => import('@/views/DragAndDrop.vue'),
     },
   ],
   linkActiveClass: 'active',
@@ -79,4 +79,3 @@ router.beforeEach((to, from, next) => {
 })
 
 export default router
-

@@ -1,38 +1,35 @@
 <template>
-  <div class='alert' :class="type">
-    <p class="alert-title">{{ text }}</p>
-    <p></p>
-    <span class="alert-close" @click="alertStore.closeAlert()">&times;</span>
-  </div>
+  <teleport to="body">
+    <div class='alert' :class="type">
+      <p class="alert-title">{{ text }}</p>
+      <p></p>
+      <span class="alert-close" @click="alertStore.closeAlert()">&times;</span>
+    </div>
+  </teleport>
 </template>
 
-<script>
-// телепортировать message в конец body
+<script setup>
 import {onMounted, onUnmounted} from "vue";
 import {useAlertStore} from "@/stores/alertStore.js";
 
-export default {
-  setup() {
-    const alertStore = useAlertStore();
-    let timer = null;
+defineProps({
+  type : String,
+  text: String
+})
 
-    onMounted(() => {
-      timer = setTimeout(() => alertStore.closeAlert(), 5000)
-    });
+const alertStore = useAlertStore();
+let timer = null;
 
-    onUnmounted(() => {
-      // Очищаем таймер при размонтировании компонента
-      if (timer) {
-        clearTimeout(timer)
-      }
-    })
+onMounted(() => {
+  timer = setTimeout(() => alertStore.closeAlert(), 5000)
+});
 
-    return {
-      alertStore
-    }
-  },
-  props: ['type', 'text']
-}
+onUnmounted(() => {
+  // Очищаем таймер при размонтировании компонента
+  if (timer) {
+    clearTimeout(timer)
+  }
+})
 </script>
 
 <style scoped>

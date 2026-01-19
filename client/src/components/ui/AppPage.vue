@@ -9,12 +9,10 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: ['title'],
-}
+<script setup>
+defineProps({
+  title: String
+})
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

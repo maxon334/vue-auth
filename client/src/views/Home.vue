@@ -6,7 +6,7 @@
       </button>
 
       <request-filter ></request-filter>
-      <request-table :requests="requestsStore.filterRequests().value"></request-table>
+      <request-table :requests="requestsStore.filteredRequests"></request-table>
       <teleport to="body">
         <app-modal title="Создание пользователя" v-if="isModalOpen" @close="closeModal">
           <request-modal @close="closeModal" />
@@ -17,12 +17,10 @@
       <app-message v-if="alertStore.alert.show" :type="alertStore.alert.type" :text="alertStore.alert.text" />
       <app-loader v-if="loading" />
     </teleport>
-
 </template>
 
-<script>
+<script setup>
 import { onMounted, ref } from "vue";
-import { useStore } from "@/stores/store.js";
 import { useAlertStore } from "@/stores/alertStore.js";
 import { useAuthStore } from "@/stores/authStore.js";
 import {useRequestsStore} from "@/stores/requests.js";
@@ -36,48 +34,29 @@ import AppLoader from '../components/ui/AppLoader.vue'
 import AppMessage from "@/components/ui/AppMessage.vue";
 import VerifyEmail from "@/components/VerifyEmail.vue";
 
-export default {
-  setup() {
-    const store = useStore();
-    const alertStore = useAlertStore();
-    const authStore = useAuthStore();
-    const requestsStore = useRequestsStore();
-    const isModalOpen = ref(false);
+const alertStore = useAlertStore();
+const authStore = useAuthStore();
+const requestsStore = useRequestsStore();
+const isModalOpen = ref(false);
 
-    let loading = ref(false);
+let loading = ref(false);
 
-    alertStore.closeAlert();
+alertStore.closeAlert();
 
-    function closeModal() {
-      isModalOpen.value = false
-    }
-
-    onMounted(async () => {
-      loading.value = true;
-      authStore.$subscribe(async (mutation) => {
-        if (mutation.events.newValue.id) {
-          await requestsStore.getRequestsByID();
-        }
-      });
-      try {
-        await useRequestsStore().getRequestsByID();
-      } catch (e) {console.log(e)}
-      loading.value = false;
-    })
-
-    return {
-      store, alertStore, authStore, requestsStore,
-      isModalOpen, useStore,
-      loading,
-      closeModal,
-    }
-  },
-  components: {
-    VerifyEmail,
-    AppMessage,
-    AppPage, RequestTable,
-    RequestModal, RequestFilter,
-    AppModal, AppLoader
-  },
+function closeModal() {
+  isModalOpen.value = false
 }
+
+onMounted(async () => {
+  loading.value = true;
+  authStore.$subscribe(async (mutation) => {
+    if (mutation.events.newValue.id) {
+      await requestsStore.getRequestsByID();
+    }
+  });
+  try {
+    await useRequestsStore().getRequestsByID();
+  } catch (e) {console.log(e)}
+  loading.value = false;
+})
 </script>

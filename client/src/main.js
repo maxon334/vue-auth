@@ -13,6 +13,7 @@ app.use(createPinia());
 app.use(router);
 app.mount('#app');
 
+// Получение данных пользователя. Оставляем пользователя залогиненным, если есть валидный token в localStorage
 (async () => {
   try {
     if (localStorage.getItem('token')) {

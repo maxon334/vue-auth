@@ -1,14 +1,15 @@
 .idea
-
 /client/node_modules
 /client/.editorconfig
 /client/dist
 /client/.gitattributes
 /client/.prettierrc.json
 /client/eslint.config.js
+/client/jsconfig.json
+/client/package-lock.json
 /client/vite.config.js
-
 /server/node_modules
+/server/package-lock.json
 
 
 

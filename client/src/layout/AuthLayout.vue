@@ -7,15 +7,9 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import {useAlertStore} from "@/stores/alertStore.js";
 import AppMessage from '../components/ui/AppMessage.vue'
-export default {
-  setup() {
-    return { useAlertStore }
-  },
-  components: {AppMessage}
-}
 </script>
 
 <style scoped>

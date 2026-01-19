@@ -6,18 +6,12 @@
   </div>
 </template>
 
-<script>
-import { useStore } from "@/stores/store.js";
+<script setup>
 
-export default {
-  setup() {
-    return {
-      useStore
-    }
-  },
-  props: ['title'],
-  emits: ['close']
-}
+defineEmits(['close'])
+defineProps({
+  title: String
+})
 </script>
 
 <style scoped>

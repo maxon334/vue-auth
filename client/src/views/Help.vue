@@ -9,19 +9,12 @@
 </template>
 
 
-<script>
+<script setup>
 import AppPage from '../components/ui/AppPage.vue'
 import QuestionItem from '../components/question/QuestionItem.vue'
 
-export default {
-  setup() {
-    const questions = [
-      {title: 'Что есть в данной системе?', text: 'Тут есть все, для того, чтобы смотреть, какие заявки человек добавлял'},
-      {title: 'Как тут работает авторизация?', text: 'Все реализовано через MongoDB, Express'}
-    ]
-
-    return {questions}
-  },
-  components: {AppPage, QuestionItem}
-}
+const questions = [
+  {title: 'Что есть в данной системе?', text: 'Тут есть все, для того, чтобы смотреть, какие заявки человек добавлял'},
+  {title: 'Как тут работает авторизация?', text: 'Все реализовано через MongoDB, Express'}
+]
 </script>

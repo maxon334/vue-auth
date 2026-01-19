@@ -28,17 +28,13 @@
   </table>
 </template>
 
-<script>
+<script setup>
 import { formatCurrency } from '@/utils/currency.js'
 import AppStatus from '@/components/ui/AppStatus.vue'
 
-export default {
-  setup({ requests }) {
-    return { requests, formatCurrency }
-  },
-  components: { AppStatus },
-  props: ['requests'],
-}
+defineProps({
+  requests: Array
+})
 </script>
 
 <style scoped></style>

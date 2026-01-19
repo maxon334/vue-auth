@@ -6,19 +6,10 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { useStore } from "@/stores/store.js";
 import TheNavbar from '../components/TheNavbar.vue'
 import TheSidebar from '../components/TheSidebar.vue'
-
-export default {
-  setup() {
-    return {
-      useStore
-    }
-  },
-  components: {TheNavbar, TheSidebar}
-}
 </script>
 
 <style scoped>
