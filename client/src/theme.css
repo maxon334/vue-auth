@@ -119,10 +119,10 @@ h3 {
     border-color: #c25205;
 }
 
-.container {
-    margin: 0 auto;
-    max-width: 1000px;
-}
+/*.container {*/
+/*    margin: 0 auto;*/
+/*    max-width: 1000px;*/
+/*}*/
 
 .container.with-nav {
     margin-top: 70px;
